@@ -1,0 +1,9 @@
+{
+  "generator-node": {
+    "promptValues": {
+      "authorName": "CLP Services",
+      "authorEmail": "CLLabsServices@corelogic.onmicrosoft.com",
+      "authorUrl": ""
+    }
+  }
+}

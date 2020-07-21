@@ -1,0 +1,9 @@
+# ignore intelliJ IDEA files
+.idea/
+*.iml
+
+# ignore build files
+build/
+
+# ignore gradle files
+.gradle/

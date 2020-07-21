@@ -1,0 +1,181 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.8.RELEASE'
+        springDependencyManagamentVersion = '1.0.8.RELEASE'
+        sonarqubeVersion = '2.8'
+        gradleGitVersion = '1.4.17'
+        flywayVersion = '5.2.4'
+        dockerComposePluginVersion = '0.8.2'
+    }
+    dependencies {
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.0"
+    }
+}
+
+plugins {
+    id 'jacoco'
+    id 'java'
+    id 'idea'
+
+    id 'org.sonarqube' version "${sonarqubeVersion}"
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManagamentVersion}"
+    id 'com.avast.gradle.docker-compose' version "${dockerComposePluginVersion}"
+}
+
+if (project.file('.git').exists()) {
+    apply plugin: 'com.gorylenko.gradle-git-properties'
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+group = 'com.corelogic.clp'
+
+if (project.file('.git').exists()) {
+    gitProperties {
+        // Change date format in git.properties file.
+        dateFormat = "yyyy-MM-dd HH:mm:ssZ"
+        dateFormatTimeZone = 'GMT'
+    }
+}
+
+bootJar {
+    archiveBaseName = '<%=fullServiceName%>'
+}
+
+jar {
+    enabled=false
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.corelogic.net/nexus/content/groups/m2/" }
+}
+
+ext {
+    springCloudVersion = 'Greenwich.SR3'
+    snippetsDir = file("${project.buildDir}/generated-snippets")
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
+    implementation('org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure')
+    implementation('org.springframework.cloud:spring-cloud-starter-config')
+
+    implementation('net.sf.ehcache:ehcache')
+    implementation('io.springfox:springfox-swagger2:2.9.2')
+    implementation('io.springfox:springfox-bean-validators:2.9.2')
+
+    implementation('com.corelogic.clp.starters:clp-chargeback-service-starter:1.0.0-SNAPSHOT')
+    implementation('com.corelogic.clp.starters:clp-config-starter:2.2.1')
+    implementation('com.corelogic.clp:clp-logging:1.1.0')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    testImplementation('io.cucumber:cucumber-java:4.7.2')
+    testImplementation('io.cucumber:cucumber-junit:4.7.2')
+    testImplementation('io.cucumber:cucumber-spring:4.7.2')
+    testImplementation('org.mockito:mockito-core:3.1.0')
+
+    compileOnly('org.projectlombok:lombok:1.18.10')
+    annotationProcessor('org.projectlombok:lombok:1.18.10')
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+task cucumber() {
+    dependsOn assemble, compileTestJava
+
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'pretty', '--glue', 'gradle.cucumber', 'src/test/resources']
+        }
+    }
+}
+
+processResources {
+    project.ext.applicationProperties = project.properties
+
+    if (project.hasProperty('BUILD_NUMBER')) {
+        project.version = project.version + "." + BUILD_NUMBER
+    }
+
+    filesMatching("**/application.properties") {
+        project.applicationProperties.put("version", project.version)
+
+        expand(project.applicationProperties)
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("$buildDir/reports/jacoco")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'com.corelogic.clp:<%=applicationName%>'
+        property 'sonar.projectName', '<%=applicationName%>'
+        property 'sonar.coverage.exclusions', "**/dtos/**,**/models/**,**/entities/**,**/test/**"
+        property "sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
+
+project.tasks["sonarqube"].dependsOn "jacocoTestReport"
+
+task createCfManifest(type: Copy) {
+    from 'manifests/'
+    into 'build/manifests/'
+
+    expand(project.applicationProperties)
+
+    outputs.upToDateWhen { false }
+}
+
+task zipManifests(type: Zip) {
+    from 'build/manifests'
+    include '*.yml'
+    archiveName 'manifests.zip'
+    destinationDir(file('build'))
+}
+
+if (project.hasProperty('ci')) {
+    test.systemProperty 'spring.profiles.active', 'ci'
+} else {
+    test.systemProperty 'spring.profiles.active', 'test'
+}
+
+
+test {
+    finalizedBy cucumber
+}
+
+build.dependsOn createCfManifest
+
+createCfManifest.finalizedBy zipManifests

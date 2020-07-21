@@ -1,0 +1,15 @@
+---
+name: <%=fullServiceName%>
+routes:
+  - route: <%=fullServiceName%>-int.apps.pcfwtcdev.clgxlabs.io
+buildpack: java_buildpack_offline
+path: ../<%=fullServiceName%>.jar
+timeout: 180
+memory: 2G
+disk_quota: 512M
+services:
+  - config-server-keystore
+  - config-server
+  - syslog-drain
+env:
+  SPRING_PROFILES_ACTIVE: wtcint

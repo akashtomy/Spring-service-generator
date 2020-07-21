@@ -1,0 +1,120 @@
+buildscript {
+    ext {
+        springBootVersion = '2.2.2.RELEASE'
+        dependencyManagementPluginVersion = '1.0.8.RELEASE'
+        gradleReleasePluginVersion = '2.7.0'
+        sonarqubeVersion = '2.8'
+        springCloudDependencies='Greenwich.SR3'
+        springDependencyManagamentVersion = '1.0.8.RELEASE'
+        researchgatePluginVersion = '2.8.1'
+        lombokPluginVersion= '4.1.6'
+    }
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("net.researchgate:gradle-release:${gradleReleasePluginVersion}")
+        classpath("io.spring.gradle:dependency-management-plugin:${dependencyManagementPluginVersion}")
+    }
+}
+
+plugins {
+    id 'jacoco'
+    id 'java'
+    id 'maven'
+    id 'maven-publish'
+    id "io.freefair.lombok" version "${lombokPluginVersion}"
+
+    id 'io.spring.dependency-management' version "${springDependencyManagamentVersion}"
+    id 'org.sonarqube' version "${sonarqubeVersion}"
+    id 'net.researchgate.release' version "${researchgatePluginVersion}"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudDependencies}"
+    }
+}
+
+tasks.withType(Jar) {
+    version = project.version
+    archivesBaseName = 'clp-<%=lowerCaseName%>-service-starter'
+}
+
+processResources {
+    filesMatching('**/clp<%=lowerCaseName%>servicestarter.properties') {
+        expand(project.properties)
+    }
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.cloud:spring-cloud-starter-oauth2')
+    implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation('org.assertj:assertj-core:3.14.0')
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'com.corelogic.clp.starters.<%=packageName%>:clp-<%=lowerCaseName%>-service-starter'
+        property 'sonar.projectName', 'clp-<%=lowerCaseName%>-service-starter'
+        property 'sonar.coverage.exclusions', "**/dtos/**,**/test/**"
+    }
+}
+
+if (project.hasProperty('nexusUrl') &&
+        project.hasProperty('nexusUsername') &&
+        project.hasProperty('nexusPassword')) {
+
+    uploadArchives {
+        outputs.upToDateWhen { false }
+        repositories {
+            mavenDeployer {
+
+                repository(url: "${nexusUrl}/content/repositories/idc-repo-releases") {
+                    authentication(userName: nexusUsername, password: nexusPassword)
+                }
+                snapshotRepository(url: "${nexusUrl}/content/repositories/idc-repo-snap") {
+                    authentication(userName: nexusUsername, password: nexusPassword)
+                }
+                pom.groupId = 'com.corelogic.clp.starters'
+                pom.version = project.version
+            }
+        }
+    }
+}
+
+// For publishing to a local maven directory
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'com.corelogic.clp.starters'
+            artifactId project.name
+            version project.version
+
+            from components.java
+        }
+    }
+}
+
+release {
+    tagTemplate = '$name-$version'
+    preTagCommitMessage = '[Gradle Release Plugin] - Creating commit to set version to:'
+    tagCommitMessage = '[Gradle Release Plugin] - Creating tag for version:'
+    newVersionCommitMessage = '[Gradle Release Plugin] - Creating commit to increase version to:'
+}
+
+afterReleaseBuild.dependsOn uploadArchives

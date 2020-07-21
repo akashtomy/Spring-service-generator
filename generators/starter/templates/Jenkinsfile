@@ -1,0 +1,67 @@
+#!groovy
+commitRevision = ''
+
+node('linux') {
+    deleteDir()
+
+    sh 'env | sort'
+    setJavaHomeOnPath()
+
+    stage 'Checkout'
+    checkout scm
+
+    stage 'Assemble'
+
+    dir('clp-<%=lowerCaseName%>-service-starter') {
+        retry(2) {
+            try {
+                sh './gradlew build --console=plain --stacktrace'
+            } catch (Exception e) {
+                throw e
+            }
+        }
+    }
+
+    stash name:'everything', includes:'**/*', useDefaultExcludes: false
+
+    deleteDir()
+}
+checkpoint 'Build Complete'
+
+
+node('linux') {
+    unstash 'everything'
+
+    stage 'Snapshot'
+    dir('clp-<%=lowerCaseName%>-service-starter') {
+        sh './gradlew assemble uploadArchives --console=plain --stacktrace'
+    }
+    deleteDir()
+}
+checkpoint 'Snapshot Deployed to Nexus'
+
+stage 'Promotion'
+
+timeout(time: 1, unit: 'DAYS') {
+    input 'Deploy to nexus release?'
+}
+
+node('linux') {
+    unstash 'everything'
+
+    stage 'Release'
+
+    dir('clp-<%=lowerCaseName%>-service-starter') {
+        sh './gradlew release -Prelease.useAutomaticVersion=true -x test'
+    }
+
+    deleteDir()
+}
+
+checkpoint 'Release Deployed to Nexus'
+
+def setJavaHomeOnPath() {
+    env.JAVA_HOME = "${tool 'Java8'}"
+    env.PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+    sh 'java -version'
+}

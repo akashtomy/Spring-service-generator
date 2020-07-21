@@ -1,0 +1,7 @@
+node_modules
+coverage
+.DS_Store
+.idea/
+generators/app/templates/.idea/
+**/.gradle/buildOutputCleanup
+generators/app/templates/templates.iml

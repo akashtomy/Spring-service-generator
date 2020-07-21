@@ -1,0 +1,195 @@
+.swagger-ui .topbar {
+    padding: 10px;
+    background-color: #fafafa;
+}
+
+.swagger-ui {
+    background-color: white;
+}
+
+.swagger-container .swagger-ui .scheme-container {
+    background-color: #fafafa;
+}
+
+.swagger-ui .info .title {
+    font-weight: lighter;
+}
+
+.topbar-wrapper a img {
+    display: block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: url('corelogic-logo.png') no-repeat;
+    width: 180px;
+    height: 60px;
+    padding-left: 180px;
+}
+
+.image-test {
+    background-image: url('corelogic-logo.png');
+    width: 100px;
+    height: 100px;
+}
+
+div.responses-inner {
+    background-color: #efefef;
+}
+
+div.parameters-container {
+    background-color: #efefef;
+}
+div.opblock-description-wrapper {
+    background-color: #efefef;
+}
+
+div.opblock-body {
+    background-color: #efefef;
+}
+
+div.execute-wrapper {
+    background-color: #efefef;
+}
+
+
+div.opblock.opblock-get {
+    border-color: #dedede;
+}
+
+.swagger-ui .topbar .download-url-wrapper .download-url-button {
+    background-color: #007faa;
+}
+
+.swagger-ui .topbar .download-url-wrapper input[type="text"] {
+    border-color: #dedede;
+}
+
+.swagger-ui .btn.authorize{
+    border-color: #007faa;
+    color: #007faa;
+}
+
+.swagger-ui .btn.authorize svg {
+    fill: #007faa;
+}
+
+.swagger-ui .opblock.opblock-get.is-open .opblock-summary {
+    border-radius: 4px 4px 0px 0px;
+    border-bottom-color: #1e824c;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+    background-color: #1e824c;
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary {
+    border-radius: 4px 4px 4px 4px;
+    border-color: #1e824c;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-get {
+    border-color: #1e824c;
+}
+
+.swagger-ui .opblock.opblock-post.is-open .opblock-summary {
+    border-radius: 4px 4px 0px 0px;
+    border-bottom-color: #007faa;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary {
+    border-radius: 4px 4px 4px 4px;
+    border-color: #007faa;
+    background-color: #efefef;
+}
+
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+    background-color: #007faa;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary {
+    border-bottom-color: #007faa;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-post {
+    border-color: #007faa;
+}
+
+.swagger-ui .opblock.opblock-put.is-open .opblock-summary {
+    border-radius: 4px 4px 0px 0px;
+    border-bottom-color: #77448b;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-put .opblock-summary {
+    border-radius: 4px 4px 4px 4px;
+    border-color: #77448b;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-put .opblock-summary-method {
+    background-color: #77448b;
+}
+
+.swagger-ui .opblock.opblock-put .opblock-summary {
+    border-bottom-color: #77448b;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-put {
+    border-color: #77448b;
+}
+
+.swagger-ui .opblock.opblock-delete.is-open .opblock-summary {
+    border-radius: 4px 4px 0px 0px;
+    border-bottom-color: #d23e43;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-delete .opblock-summary {
+    border-radius: 4px 4px 4px 4px;
+    border-color: #d23e43;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+    background-color: #d23e43;
+}
+
+.swagger-ui .opblock.opblock-delete .opblock-summary {
+    border-bottom-color: #d23e43;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-delete {
+    border-color: #d23e43;
+}
+
+.swagger-ui .opblock.opblock-patch.is-open .opblock-summary {
+    border-radius: 4px 4px 0px 0px;
+    border-bottom-color: #77448b;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-patch .opblock-summary {
+    border-radius: 4px 4px 4px 4px;
+    border-color: #77448b;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-patch .opblock-summary-method {
+    background-color: #77448b;
+}
+
+.swagger-ui .opblock.opblock-patch .opblock-summary {
+    border-bottom-color: #77448b;
+    background-color: #efefef;
+}
+
+.swagger-ui .opblock.opblock-patch {
+    border-color: #77448b;
+}
+

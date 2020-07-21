@@ -1,0 +1,17 @@
+task flywayDevConfig(group: "flyway") {
+    doLast {
+        project.ext['flyway.user'] = '<%=schemaSimpleServiceName%>_dev'
+        project.ext['flyway.url'] = 'jdbc:@localhost:5432/xe'
+        project.ext['flyway.password'] = 'corelogic1'
+        project.ext['flyway.locations'] = 'filesystem:'+ project.file('src/main/resources/db/migration/')
+    }
+}
+
+task flywayTestConfig(group: "flyway") {
+    doLast {
+        project.ext['flyway.user'] = '<%=schemaSimpleServiceName%>_test'
+        project.ext['flyway.url'] = 'jdbc:@localhost:5432/xe'
+        project.ext['flyway.password'] = 'corelogic1'
+        project.ext['flyway.locations'] = 'filesystem:'+ project.file('src/main/resources/db/migration/')
+    }
+}
