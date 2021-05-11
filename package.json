@@ -32,7 +32,7 @@
     "fill-range": "6.0.0",
     "gulp-rename": "1.2.2",
     "hoek": "5.0.3",
-    "lodash": "4.17.19",
+    "lodash": "4.17.21",
     "mem-fs-editor": "5.1.0",
     "randomatic": "3.0.0",
     "sshpk": "1.14.2",
